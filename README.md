@@ -28,6 +28,8 @@ Then you will have the following files and directories.
   - Log files, my-daemon.out and my-daemon.err, will be created in this directory.
 - `my-daemon/pid/`
   - PID file for the daemon process will be created in this directory.
+- `my-daemon/Gemfile`
+- `my-daemon/Gemfile.lock`
 
 ```
 my-daemon/my-daemon start

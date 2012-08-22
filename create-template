@@ -25,6 +25,7 @@ mkdir -p $1
 cat $TEMPLATE_PATH/service | sed "s#^JRUBY_HOME=#JRUBY_HOME=$(cd "$(dirname $(which jruby))"; cd ..; pwd)#"> $1/$NAME
 chmod +x $1/$NAME
 cp $TEMPLATE_PATH/service.rb $1/$NAME.rb
+cp $TEMPLATE_PATH/Gemfile* $1/
 mkdir $1/log $1/pid
 
 echo "$1 created!"
