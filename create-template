@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+# Junegunn Choi (junegunn.c@gmail.com)
+# 2012/08/21-
+
+TEMPLATE_PATH=$(dirname $BASH_SOURCE)/__template__
+
+if [ $# -ne 1 ]; then
+  echo "usage: $0 <app name>"
+  exit 1
+fi
+
+if [ -e $1 ]; then
+  echo "$1 already exists."
+  exit 1
+fi
+
+if [ -z "`which jruby`" ]; then
+  echo 'Cannot find `jruby` executable.'
+  exit 1
+fi
+
+NAME=`basename $1`
+mkdir -p $1
+cat $TEMPLATE_PATH/service | sed "s#^JRUBY_HOME=#JRUBY_HOME=$(cd "$(dirname $(which jruby))"; cd ..; pwd)#"> $1/$NAME
+chmod +x $1/$NAME
+cp $TEMPLATE_PATH/service.rb $1/$NAME.rb
+
+echo "$1 created!"

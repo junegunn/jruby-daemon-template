@@ -1,0 +1,82 @@
+#!/bin/bash
+
+JRUBY_HOME=
+ARGV=""
+
+APP_NAME=$(basename "$BASH_SOURCE")
+APP_PATH=$(dirname "$BASH_SOURCE")
+RUBY_SCRIPT="$BASH_SOURCE".rb
+
+PID_PATH=$APP_PATH/pid
+PID_FILE=$PID_PATH/$APP_NAME.pid
+
+LOG_PATH=$APP_PATH/log
+OUT_FILE=$LOG_PATH/$APP_NAME.out
+ERR_FILE=$LOG_PATH/$APP_NAME.err
+
+# ---------------------------------------------------
+JRUBY=$JRUBY_HOME/bin/jruby
+GEM=$JRUBY_HOME/bin/gem
+
+unset  GEM_PATH GEM_HOME
+export GEM_PATH=$($JRUBY $GEM environment gempath)
+export GEM_HOME=$($JRUBY $GEM environment gemhome)
+
+mkdir  -p $PID_PATH $LOG_PATH
+
+WRAPPER='
+require "rubygems";
+require "spoon";
+pid = Spoon.spawnp(*ARGV[1..-1]);
+File.open(ARGV[0], "w") { |f| f << pid };
+'
+SHIM=/tmp/${APP_NAME}_shim.rb
+echo $WRAPPER > $SHIM
+COMMAND="$JRUBY $SHIM '$PID_FILE' '$JRUBY' '$RUBY_SCRIPT' $ARGV"
+
+start_daemon() {
+	if [ -e "$PID_FILE" ]; then
+		echo "PID file already exists."
+		exit 1
+	else
+		echo "Starting $APP_NAME."
+		eval $COMMAND 2>> $ERR_FILE >> $OUT_FILE
+    exit $?
+	fi
+}
+
+stop_daemon() {
+	if [ -e "$PID_FILE" ]; then
+		echo "Stopping $APP_NAME."
+		PID=`cat $PID_FILE`
+		while [ 1 ]; do
+			kill -TERM $PID 2> /dev/null
+			sleep 1
+			[ `ps $PID 2> /dev/null | grep $PID | wc -l` -eq 0 ] && break
+		done
+		rm $PID_FILE
+	else
+		echo "PID file not found."
+		exit 1
+	fi
+}
+
+case $1 in
+	start)
+		start_daemon
+	;;
+	stop)
+		stop_daemon
+	;;
+	restart)
+		stop_daemon
+		sleep 1
+		start_daemon
+  ;;
+  *)
+    echo "usage: $0 start|stop|restart"
+    exit 1
+	;;
+esac
+exit 0
+
