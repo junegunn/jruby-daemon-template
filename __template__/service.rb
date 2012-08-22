@@ -2,6 +2,8 @@
 # encoding: utf-8
 
 loop do
-  puts Time.now
+  $stdout.puts Time.now
+  sleep 1
+  $stderr.puts Time.now
   sleep 1
 end

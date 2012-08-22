@@ -18,7 +18,7 @@ git clone https://github.com/junegunn/jruby-daemon-template
 jruby-daemon-template/create-template my-daemon
 ```
 
-Then you will have the following files.
+Then you will have the following files and directories.
 
 - `my-daemon/my-daemon`
   - A wrapper script for implementing init.d-style start/stop/restart interface.

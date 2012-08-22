@@ -1,20 +1,27 @@
 #!/bin/bash
 
-JRUBY_HOME=
+# Enable logging
+LOGGING=1
+
+# Arguments for the script
 ARGV=""
 
+# ---------------------------------------------------
 APP_NAME=$(basename "$BASH_SOURCE")
 APP_PATH=$(dirname "$BASH_SOURCE")
 RUBY_SCRIPT="$BASH_SOURCE".rb
 
 PID_PATH=$APP_PATH/pid
 PID_FILE=$PID_PATH/$APP_NAME.pid
+mkdir -p $PID_PATH 
 
 LOG_PATH=$APP_PATH/log
 OUT_FILE=$LOG_PATH/$APP_NAME.out
 ERR_FILE=$LOG_PATH/$APP_NAME.err
+[ $LOGGING -eq 1 ] && mkdir -p $LOG_PATH
 
 # ---------------------------------------------------
+JRUBY_HOME=
 JRUBY=$JRUBY_HOME/bin/jruby
 GEM=$JRUBY_HOME/bin/gem
 
@@ -22,8 +29,7 @@ unset  GEM_PATH GEM_HOME
 export GEM_PATH=$($JRUBY $GEM environment gempath)
 export GEM_HOME=$($JRUBY $GEM environment gemhome)
 
-mkdir  -p $PID_PATH $LOG_PATH
-
+# ---------------------------------------------------
 WRAPPER='
 require "rubygems";
 require "spoon";
@@ -40,7 +46,11 @@ start_daemon() {
 		exit 1
 	else
 		echo "Starting $APP_NAME."
-		eval $COMMAND 2>> $ERR_FILE >> $OUT_FILE
+    if [ $LOGGING -eq 1 ]; then
+      eval $COMMAND 2>> $ERR_FILE >> $OUT_FILE
+    else
+      eval $COMMAND
+    fi
     exit $?
 	fi
 }
