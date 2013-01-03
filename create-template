@@ -20,9 +20,17 @@ if [ -z "`which jruby`" ]; then
   exit 1
 fi
 
+if [ -z "`which gem`" ]; then
+  echo 'Cannot find `gem` executable.'
+  exit 1
+fi
+
 NAME=`basename $1`
 mkdir -p $1
-cat $TEMPLATE_PATH/service | sed "s#^JRUBY_HOME=#JRUBY_HOME=$(cd "$(dirname $(which jruby))"; cd ..; pwd)#"> $1/$NAME
+cat $TEMPLATE_PATH/service | \
+  sed "s#^JRUBY_HOME=#JRUBY_HOME=$(cd "$(dirname $(which jruby))"; cd ..; pwd)#" | \
+  sed "s#^export GEM_HOME=#export GEM_HOME=$(jruby `which gem` environment gemhome)#" | \
+  sed "s#^export GEM_PATH=#export GEM_PATH=$(jruby `which gem` environment gempath)#" > $1/$NAME
 chmod +x $1/$NAME
 cp $TEMPLATE_PATH/service.rb $1/$NAME.rb
 cp $TEMPLATE_PATH/Gemfile* $1/

@@ -13,7 +13,7 @@ RUBY_SCRIPT="$BASH_SOURCE".rb
 
 PID_PATH=$APP_PATH/pid
 PID_FILE=$PID_PATH/$APP_NAME.pid
-mkdir -p $PID_PATH 
+mkdir -p $PID_PATH
 
 LOG_PATH=$APP_PATH/log
 OUT_FILE=$LOG_PATH/$APP_NAME.out
@@ -25,9 +25,8 @@ JRUBY_HOME=
 JRUBY=$JRUBY_HOME/bin/jruby
 GEM=$JRUBY_HOME/bin/gem
 
-unset  GEM_PATH GEM_HOME
-export GEM_PATH=$($JRUBY $GEM environment gempath)
-export GEM_HOME=$($JRUBY $GEM environment gemhome)
+export GEM_PATH=
+export GEM_HOME=
 
 # ---------------------------------------------------
 WRAPPER='
