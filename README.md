@@ -1,7 +1,7 @@
 Daemonizing JRuby script
 ========================
 
-Turn a JRuby script into a init-d style daemon with `nohup` command.
+Turn a JRuby script into an init-d style daemon with `nohup` command.
 
 Usage
 -----
