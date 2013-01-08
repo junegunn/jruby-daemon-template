@@ -15,15 +15,12 @@ if [ -e $1 ]; then
   exit 1
 fi
 
-if [ -z "`which jruby`" ]; then
-  echo 'Cannot find `jruby` executable.'
-  exit 1
-fi
-
-if [ -z "`which gem`" ]; then
-  echo 'Cannot find `gem` executable.'
-  exit 1
-fi
+for cmd in jruby gem nohup; do
+  if [ -z "`which $cmd`" ]; then
+    echo "Cannot find '$cmd' executable."
+    exit 1
+  fi
+done
 
 NAME=`basename $1`
 mkdir -p $1

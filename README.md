@@ -1,14 +1,7 @@
 Daemonizing JRuby script
 ========================
 
-Turn a JRuby script into a init-d style daemon.
-
-Prerequisite: spoon gem
------------------------
-
-```
-gem install spoon
-```
+Turn a JRuby script into a init-d style daemon with `nohup` command.
 
 Usage
 -----

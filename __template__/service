@@ -29,15 +29,6 @@ export GEM_PATH=
 export GEM_HOME=
 
 # ---------------------------------------------------
-WRAPPER='
-require "rubygems";
-require "spoon";
-pid = Spoon.spawnp(*ARGV[1..-1]);
-File.open(ARGV[0], "w") { |f| f << pid };
-'
-SHIM=/tmp/${APP_NAME}_shim.rb
-echo $WRAPPER > $SHIM
-COMMAND="$JRUBY $SHIM '$PID_FILE' '$JRUBY' '$RUBY_SCRIPT' $ARGV"
 
 start_daemon() {
 	if [ -e "$PID_FILE" ]; then
@@ -46,9 +37,11 @@ start_daemon() {
 	else
 		echo "Starting $APP_NAME."
     if [ $LOGGING -eq 1 ]; then
-      eval $COMMAND 2>> $ERR_FILE >> $OUT_FILE
+      nohup $JRUBY $RUBY_SCRIPT $ARGV 2>> $ERR_FILE >> $OUT_FILE &
+      echo $! > "$PID_FILE"
     else
-      eval $COMMAND
+      nohup $JRUBY $RUBY_SCRIPT $ARGV 2> /dev/null > /dev/null &
+      echo $! > "$PID_FILE"
     fi
     exit $?
 	fi
@@ -66,7 +59,7 @@ stop_daemon() {
 		rm $PID_FILE
 	else
 		echo "PID file not found."
-		exit 1
+    return 1
 	fi
 }
 
@@ -87,5 +80,4 @@ case $1 in
     exit 1
 	;;
 esac
-exit 0
 
