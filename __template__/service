@@ -37,10 +37,10 @@ start_daemon() {
 	else
 		echo "Starting $APP_NAME."
     if [ $LOGGING -eq 1 ]; then
-      nohup $JRUBY $RUBY_SCRIPT $ARGV 2>> $ERR_FILE >> $OUT_FILE &
+      nohup $JRUBY $RUBY_SCRIPT $ARGV 2>> $ERR_FILE >> $OUT_FILE < /dev/null &
       echo $! > "$PID_FILE"
     else
-      nohup $JRUBY $RUBY_SCRIPT $ARGV 2> /dev/null > /dev/null &
+      nohup $JRUBY $RUBY_SCRIPT $ARGV 2> /dev/null > /dev/null < /dev/null &
       echo $! > "$PID_FILE"
     fi
     exit $?
@@ -63,6 +63,20 @@ stop_daemon() {
 	fi
 }
 
+check_status() {
+  if [ -e "$PID_FILE" ]; then
+    PID=`cat $PID_FILE`
+    if [ `ps $PID 2> /dev/null | grep $PID | wc -l` -eq 1 ]; then
+      echo "$APP_NAME is running"
+      return 0
+    fi
+  fi
+
+  echo "$APP_NAME is not running"
+  return 3
+}
+
+
 case $1 in
 	start)
 		start_daemon
@@ -70,13 +84,16 @@ case $1 in
 	stop)
 		stop_daemon
 	;;
+  status)
+    check_status
+  ;;
 	restart)
 		stop_daemon
 		sleep 1
 		start_daemon
   ;;
   *)
-    echo "usage: $0 start|stop|restart"
+    echo "usage: $0 start|stop|restart|status"
     exit 1
 	;;
 esac
