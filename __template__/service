@@ -35,30 +35,30 @@ else
 fi
 
 start_daemon() {
-	if [ -e "$PID_FILE" ]; then
-		echo "PID file already exists."
-		exit 1
-	else
-		echo "Starting $APP_NAME."
+if [ -e "$PID_FILE" ]; then
+  echo "PID file already exists."
+  exit 1
+else
+  echo "Starting $APP_NAME."
     sh -c "( ( nohup $JRUBY $RUBY_SCRIPT $ARGV 2>> \"$ERR_FILE\" >> \"$OUT_FILE\" < /dev/null ) & echo \$! > \"$PID_FILE\" )"
     exit $?
-	fi
+fi
 }
 
 stop_daemon() {
-	if [ -e "$PID_FILE" ]; then
-		echo "Stopping $APP_NAME."
-		PID=`cat $PID_FILE`
-		while [ 1 ]; do
-			kill -TERM $PID 2> /dev/null
-			sleep 1
-			[ `ps $PID 2> /dev/null | grep $PID | wc -l` -eq 0 ] && break
-		done
-		rm $PID_FILE
-	else
-		echo "PID file not found."
+if [ -e "$PID_FILE" ]; then
+  echo "Stopping $APP_NAME."
+  PID=`cat $PID_FILE`
+  while [ 1 ]; do
+    kill -TERM $PID 2> /dev/null
+    sleep 1
+    [ `ps $PID 2> /dev/null | grep $PID | wc -l` -eq 0 ] && break
+  done
+  rm $PID_FILE
+else
+  echo "PID file not found."
     return 1
-	fi
+fi
 }
 
 check_status() {
@@ -76,23 +76,23 @@ check_status() {
 
 
 case $1 in
-	start)
-		start_daemon
-	;;
-	stop)
-		stop_daemon
-	;;
+start)
+  start_daemon
+;;
+stop)
+  stop_daemon
+;;
   status)
     check_status
   ;;
-	restart)
-		stop_daemon
-		sleep 1
-		start_daemon
+restart)
+  stop_daemon
+  sleep 1
+  start_daemon
   ;;
   *)
     echo "usage: $0 start|stop|restart|status"
     exit 1
-	;;
+;;
 esac
 
