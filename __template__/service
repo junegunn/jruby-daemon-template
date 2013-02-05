@@ -18,9 +18,8 @@ mkdir -p $PID_PATH
 LOG_PATH=$APP_PATH/log
 OUT_FILE=$LOG_PATH/$APP_NAME.out
 ERR_FILE=$LOG_PATH/$APP_NAME.err
-[ $LOGGING -eq 1 ] && mkdir -p $LOG_PATH
-
 # ---------------------------------------------------
+
 JRUBY_HOME=
 JRUBY=$JRUBY_HOME/bin/jruby
 GEM=$JRUBY_HOME/bin/gem
@@ -28,7 +27,12 @@ GEM=$JRUBY_HOME/bin/gem
 export GEM_PATH=
 export GEM_HOME=
 
-# ---------------------------------------------------
+if [ $LOGGING -eq 1 ]; then
+  mkdir -p $LOG_PATH
+else
+  OUT_FILE=/dev/null
+  ERR_FILE=/dev/null
+fi
 
 start_daemon() {
 	if [ -e "$PID_FILE" ]; then
@@ -36,11 +40,7 @@ start_daemon() {
 		exit 1
 	else
 		echo "Starting $APP_NAME."
-    if [ $LOGGING -eq 1 ]; then
-      sh -c "( ( nohup $JRUBY $RUBY_SCRIPT $ARGV 2>> \"$ERR_FILE\" >> \"$OUT_FILE\" < /dev/null ) & echo \$! > \"$PID_FILE\" )"
-    else
-      sh -c "( ( nohup $JRUBY $RUBY_SCRIPT $ARGV 2> /dev/null > /dev/null < /dev/null ) & echo \$! > \"$PID_FILE\" )"
-    fi
+    sh -c "( ( nohup $JRUBY $RUBY_SCRIPT $ARGV 2>> \"$ERR_FILE\" >> \"$OUT_FILE\" < /dev/null ) & echo \$! > \"$PID_FILE\" )"
     exit $?
 	fi
 }
