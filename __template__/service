@@ -37,11 +37,9 @@ start_daemon() {
 	else
 		echo "Starting $APP_NAME."
     if [ $LOGGING -eq 1 ]; then
-      nohup $JRUBY $RUBY_SCRIPT $ARGV 2>> $ERR_FILE >> $OUT_FILE < /dev/null &
-      echo $! > "$PID_FILE"
+      sh -c "( ( nohup $JRUBY $RUBY_SCRIPT $ARGV 2>> \"$ERR_FILE\" >> \"$OUT_FILE\" < /dev/null ) & echo \$! > \"$PID_FILE\" )"
     else
-      nohup $JRUBY $RUBY_SCRIPT $ARGV 2> /dev/null > /dev/null < /dev/null &
-      echo $! > "$PID_FILE"
+      sh -c "( ( nohup $JRUBY $RUBY_SCRIPT $ARGV 2> /dev/null > /dev/null < /dev/null ) & echo \$! > \"$PID_FILE\" )"
     fi
     exit $?
 	fi
