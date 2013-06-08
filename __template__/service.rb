@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 require 'rubygems'
-ENV['BUNDLE_GEMFILE'] = File.join(File.dirname(__FILE__), 'Gemfile')
+ENV['BUNDLE_GEMFILE'] = File.expand_path('../Gemfile', __FILE__)
 require 'bundler/setup'
 
 loop do
